@@ -13,7 +13,7 @@ export const getImage: RequestHandler = (req, res) => {
         const currentFileName = files[0];
         res.json({
             name: currentFileName,
-            url: `http://${req.get('host')}/images/test/${currentFileName}`
+            url: `/images/test/${currentFileName}`
         })
     })
 };
