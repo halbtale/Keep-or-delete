@@ -11,7 +11,6 @@ app.use('/api', router);
 
 // Error Handler
 app.use((err: Error, req: Request, res: Response, _: NextFunction) => {
-    console.log(err);
     res.status(500).json({
         message: err.message,
     });
