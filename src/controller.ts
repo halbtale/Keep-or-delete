@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import path from 'path';
 import fs from 'fs'
 import moveFile from 'move-file'
+import mime from 'mime-types'
 
 const baseDir = path.join(process.cwd(), 'static', 'images');
 
@@ -11,9 +12,12 @@ export const getImage: RequestHandler = (req, res) => {
         if (err) throw new Error('Could not read any file');
 
         const currentFileName = files[0];
+
+        const contentType = mime.lookup(path.extname(currentFileName));
         res.json({
             name: currentFileName,
-            url: `/images/test/${currentFileName}`
+            url: `/images/test/${currentFileName}`,
+            contentType
         })
     })
 };
