@@ -11,14 +11,34 @@ export const getImage: RequestHandler = (req, res) => {
     fs.readdir(directoryPath, (err, files) => {
         if (err) throw new Error('Could not read any file');
 
-        const currentFileName = files[0];
+        let isFileValid = false;
+        let currentFileName;
+        let contentType;
 
-        const contentType = mime.lookup(path.extname(currentFileName));
-        res.json({
-            name: currentFileName,
-            url: `/images/test/${currentFileName}`,
-            contentType
-        })
+        // Filter hidden files
+        for (let i = 0; i < files.length; i++) {
+            let _currentFileName = files[i];
+            if (_currentFileName) {
+                let _contentType = mime.lookup(path.extname(_currentFileName));
+                if (_contentType) {
+                    contentType = _contentType;
+                    currentFileName = _currentFileName
+                    break;
+                }
+            }
+        }
+
+        if (currentFileName && contentType) {
+            res.json({
+                name: currentFileName,
+                url: `/images/test/${currentFileName}`,
+                contentType
+            })
+        } else {
+            res.status(404).json({
+                message: 'No file found'
+            })
+        }
     })
 };
 

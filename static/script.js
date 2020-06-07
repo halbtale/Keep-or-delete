@@ -12,18 +12,27 @@ const api = {
 };
 
 const app = {
+    started: false,
     active: true,
+    contentType: '',
     currentImageName: '',
     set currentImageUrl(url) {
-        document.getElementById('preview-image').src = url;
+        const image = document.getElementById('preview-image');
+        if (this.contentType && this.contentType.includes('image')) {
+            image.outerHTML = `<img alt="Image" id="preview-image" src="${url}">`;
+        } else if (this.contentType && this.contentType.includes('video')) {
+            image.outerHTML = `<video autoplay alt="Video" id="preview-image" src="${url}"></video>`;
+        }
     },
     async setNewUrl() {
-        const { name, url } = await api.fetchData();
+        const { name, url, contentType } = await api.fetchData();
 
         if (!url || !name) {
+            this.contentType = 'image/png';
             this.currentImageUrl = 'https://miro.medium.com/max/3840/1*S89gBM63qM-_kQ6wVHtBzw.png'; // DONE IMAGE
             this.active = false;
         } else {
+            this.contentType = contentType;
             this.currentImageUrl = url;
             this.currentImageName = name;
         }
@@ -34,10 +43,6 @@ const app = {
     async deleteImage() {
         await api.fetchData('DELETE', this.currentImageName);
     },
-};
-
-const init = () => {
-    app.setNewUrl();
 };
 
 document.addEventListener('keydown', async (event) => {
@@ -55,4 +60,9 @@ document.addEventListener('keydown', async (event) => {
     }
 });
 
-init();
+document.addEventListener('click', () => {
+    if (!app.started) {
+        app.started = true;
+        app.setNewUrl();
+    }
+});
